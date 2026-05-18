@@ -35,8 +35,10 @@ coverage: $(TEST_TARGET)
 	mkdir -p $(COV_DIR)
 	$(TEST_TARGET)
 	lcov --capture --directory . --output-file $(COV_DIR)/coverage.info
-	lcov --list $(COV_DIR)/coverage.info
 	genhtml $(COV_DIR)/coverage.info --output-directory $(COV_DIR)/html
+	@echo ""
+	@echo "=== Coverage report ==="
+	@cat $(COV_DIR)/coverage.info | grep -E "lines|functions" | head -2
 
 $(BIN_DIR):
 	mkdir -p $(BIN_DIR)
