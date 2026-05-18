@@ -388,6 +388,7 @@ int main() {
     
     int failed = CU_get_number_of_failures();
     CU_cleanup_registry();
+
     
     return failed ? 1 : 0;
 }
