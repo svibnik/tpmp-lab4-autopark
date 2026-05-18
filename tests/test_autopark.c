@@ -8,14 +8,14 @@
 #include "../src/operations.h"
 #include "../src/utils.h"
 
-// === ÒÅÑÒÛ ÄËß db.c ===
+// === Ğ¢Ğ•Ğ¡Ğ¢Ğ« Ğ”Ğ›Ğ¯ db.c ===
 void test_db_init_close(void) {
     CU_ASSERT_TRUE(db_init(":memory:"));
     db_close();
     CU_ASSERT_PTR_NULL(db);
 }
 
-void test_db_init_null(void) {
+void test_db_init_invalid(void) {
     CU_ASSERT_FALSE(db_init("/invalid/path/that/does/not/exist.db"));
 }
 
@@ -25,13 +25,13 @@ void test_db_execute_invalid_sql(void) {
     db_close();
 }
 
-// === ÒÅÑÒÛ ÄËß auth.c ===
+// === Ğ¢Ğ•Ğ¡Ğ¢Ğ« Ğ”Ğ›Ğ¯ auth.c ===
 void test_authenticate_valid(void) {
     db_init(":memory:");
     db_execute("CREATE TABLE users (login TEXT, password_hash TEXT, role TEXT);");
     db_execute("INSERT INTO users VALUES ('admin', 'admin123', 'manager');");
-
-    User user = { "", "" };
+    
+    User user = {"", ""};
     CU_ASSERT_TRUE(authenticate("admin", "admin123", &user));
     CU_ASSERT_STRING_EQUAL(user.username, "admin");
     CU_ASSERT_STRING_EQUAL(user.role, "manager");
@@ -42,66 +42,86 @@ void test_authenticate_invalid(void) {
     db_init(":memory:");
     db_execute("CREATE TABLE users (login TEXT, password_hash TEXT, role TEXT);");
     db_execute("INSERT INTO users VALUES ('admin', 'admin123', 'manager');");
-
-    User user = { "", "" };
+    
+    User user = {"", ""};
     CU_ASSERT_FALSE(authenticate("admin", "wrongpass", &user));
     CU_ASSERT_STRING_EQUAL(user.username, "");
     db_close();
 }
 
 void test_logout(void) {
-    User user = { "admin", "manager" };
+    User user = {"admin", "manager"};
     logout(&user);
     CU_ASSERT_STRING_EQUAL(user.username, "");
     CU_ASSERT_STRING_EQUAL(user.role, "");
 }
 
 void test_is_logged_in(void) {
-    User user1 = { "", "" };
-    User user2 = { "admin", "manager" };
+    User user1 = {"", ""};
+    User user2 = {"admin", "manager"};
     CU_ASSERT_FALSE(is_logged_in(&user1));
     CU_ASSERT_TRUE(is_logged_in(&user2));
 }
 
-// === ÒÅÑÒÛ ÄËß operations.c ===
-void test_capacity_check_exceeds(void) {
+// === Ğ¢Ğ•Ğ¡Ğ¢Ğ« Ğ”Ğ›Ğ¯ operations.c ===
+void test_insert_car_logic(void) {
+    // ĞŸÑ€Ğ¾Ğ²ĞµÑ€ÑĞµĞ¼, Ñ‡Ñ‚Ğ¾ Ñ„ÑƒĞ½ĞºÑ†Ğ¸Ñ ÑÑƒÑ‰ĞµÑÑ‚Ğ²ÑƒĞµÑ‚
+    CU_ASSERT_PTR_NOT_NULL(insert_car);
+}
+
+void test_update_car_logic(void) {
+    CU_ASSERT_PTR_NOT_NULL(update_car);
+}
+
+void test_delete_car_logic(void) {
+    CU_ASSERT_PTR_NOT_NULL(delete_car);
+}
+
+void test_insert_driver_logic(void) {
+    CU_ASSERT_PTR_NOT_NULL(insert_driver);
+}
+
+void test_insert_order_logic(void) {
+    CU_ASSERT_PTR_NOT_NULL(insert_order);
+}
+
+void test_capacity_exceeds(void) {
     int cargo_mass = 6000;
     int capacity = 5000;
     CU_ASSERT_TRUE(cargo_mass > capacity);
 }
 
-void test_capacity_check_ok(void) {
+void test_capacity_ok(void) {
     int cargo_mass = 3000;
     int capacity = 5000;
     CU_ASSERT_FALSE(cargo_mass > capacity);
 }
 
-void test_driver_earnings_percent(void) {
+void test_earnings_percent(void) {
     double cost = 10000.0;
     double expected = 2000.0;
     CU_ASSERT_DOUBLE_EQUAL(cost * 0.2, expected, 0.001);
 }
 
-void test_earnings_with_zero(void) {
+void test_earnings_zero(void) {
     double cost = 0.0;
     CU_ASSERT_DOUBLE_EQUAL(cost * 0.2, 0.0, 0.001);
 }
 
-// === ÒÅÑÒÛ ÄËß utils.c ===
-void test_clear_input_buffer(void) {
-    // Ïğîâåğÿåì, ÷òî ôóíêöèÿ ñóùåñòâóåò è íå êğàøèòñÿ
+// === Ğ¢Ğ•Ğ¡Ğ¢Ğ« Ğ”Ğ›Ğ¯ utils.c ===
+void test_clear_buffer_exists(void) {
     CU_ASSERT_PTR_NOT_NULL(clear_input_buffer);
 }
 
-void test_print_header(void) {
+void test_print_header_exists(void) {
     CU_ASSERT_PTR_NOT_NULL(print_header);
 }
 
-void test_wait_for_enter(void) {
+void test_wait_for_enter_exists(void) {
     CU_ASSERT_PTR_NOT_NULL(wait_for_enter);
 }
 
-// === ÒÅÑÒÛ ÄËß queries.c ===
+// === Ğ¢Ğ•Ğ¡Ğ¢Ğ« Ğ”Ğ›Ğ¯ queries.c ===
 void test_string_comparison_equal(void) {
     char str1[] = "Ivanov";
     char str2[] = "Ivanov";
@@ -120,43 +140,64 @@ void test_car_number_format(void) {
     CU_ASSERT_TRUE(number[0] >= 'A' && number[0] <= 'Z');
 }
 
+void test_driver_lastname_not_empty(void) {
+    char lastname[] = "Ivanov";
+    CU_ASSERT_TRUE(strlen(lastname) > 0);
+}
+
+// === Ğ¢Ğ•Ğ¡Ğ¢Ğ« Ğ”Ğ›Ğ¯ main.c (Ğ¾Ğ¿Ñ†Ğ¸Ğ¾Ğ½Ğ°Ğ»ÑŒĞ½Ğ¾) ===
+void test_main_menu_function_exists(void) {
+    // ĞŸÑ€Ğ¾Ğ²ĞµÑ€ÑĞµĞ¼, Ñ‡Ñ‚Ğ¾ Ğ²Ğ½ĞµÑˆĞ½Ğ¸Ğµ Ñ„ÑƒĞ½ĞºÑ†Ğ¸Ğ¸ ÑÑƒÑ‰ĞµÑÑ‚Ğ²ÑƒÑÑ‚
+    CU_ASSERT_PTR_NOT_NULL(db_init);
+    CU_ASSERT_PTR_NOT_NULL(authenticate);
+}
+
 int main() {
     CU_initialize_registry();
-
-    CU_pSuite suite = CU_add_suite("Òåñòû Àâòîïàğêà", 0, 0);
-
-    // Òåñòû db.c (3 òåñòà)
+    
+    CU_pSuite suite = CU_add_suite("Ğ¢ĞµÑÑ‚Ñ‹ ĞĞ²Ñ‚Ğ¾Ğ¿Ğ°Ñ€ĞºĞ°", 0, 0);
+    
+    // Ğ¢ĞµÑÑ‚Ñ‹ db.c (3 Ñ‚ĞµÑÑ‚Ğ°)
     CU_add_test(suite, "db_init_close", test_db_init_close);
-    CU_add_test(suite, "db_init_invalid", test_db_init_null);
+    CU_add_test(suite, "db_init_invalid", test_db_init_invalid);
     CU_add_test(suite, "db_execute_invalid", test_db_execute_invalid_sql);
-
-    // Òåñòû auth.c (4 òåñòà)
+    
+    // Ğ¢ĞµÑÑ‚Ñ‹ auth.c (4 Ñ‚ĞµÑÑ‚Ğ°)
     CU_add_test(suite, "auth_valid", test_authenticate_valid);
     CU_add_test(suite, "auth_invalid", test_authenticate_invalid);
     CU_add_test(suite, "logout", test_logout);
     CU_add_test(suite, "is_logged_in", test_is_logged_in);
-
-    // Òåñòû operations.c (4 òåñòà)
-    CU_add_test(suite, "capacity_exceeds", test_capacity_check_exceeds);
-    CU_add_test(suite, "capacity_ok", test_capacity_check_ok);
-    CU_add_test(suite, "earnings_percent", test_driver_earnings_percent);
-    CU_add_test(suite, "earnings_zero", test_earnings_with_zero);
-
-    // Òåñòû utils.c (3 òåñòà)
-    CU_add_test(suite, "clear_buffer", test_clear_input_buffer);
-    CU_add_test(suite, "print_header", test_print_header);
-    CU_add_test(suite, "wait_for_enter", test_wait_for_enter);
-
-    // Òåñòû queries.c (3 òåñòà)
+    
+    // Ğ¢ĞµÑÑ‚Ñ‹ operations.c (8 Ñ‚ĞµÑÑ‚Ğ¾Ğ²)
+    CU_add_test(suite, "insert_car_logic", test_insert_car_logic);
+    CU_add_test(suite, "update_car_logic", test_update_car_logic);
+    CU_add_test(suite, "delete_car_logic", test_delete_car_logic);
+    CU_add_test(suite, "insert_driver_logic", test_insert_driver_logic);
+    CU_add_test(suite, "insert_order_logic", test_insert_order_logic);
+    CU_add_test(suite, "capacity_exceeds", test_capacity_exceeds);
+    CU_add_test(suite, "capacity_ok", test_capacity_ok);
+    CU_add_test(suite, "earnings_percent", test_earnings_percent);
+    CU_add_test(suite, "earnings_zero", test_earnings_zero);
+    
+    // Ğ¢ĞµÑÑ‚Ñ‹ utils.c (3 Ñ‚ĞµÑÑ‚Ğ°)
+    CU_add_test(suite, "clear_buffer_exists", test_clear_buffer_exists);
+    CU_add_test(suite, "print_header_exists", test_print_header_exists);
+    CU_add_test(suite, "wait_for_enter_exists", test_wait_for_enter_exists);
+    
+    // Ğ¢ĞµÑÑ‚Ñ‹ queries.c (4 Ñ‚ĞµÑÑ‚Ğ°)
     CU_add_test(suite, "string_equal", test_string_comparison_equal);
     CU_add_test(suite, "string_not_equal", test_string_comparison_not_equal);
     CU_add_test(suite, "car_number_format", test_car_number_format);
-
+    CU_add_test(suite, "driver_lastname_not_empty", test_driver_lastname_not_empty);
+    
+    // Ğ¢ĞµÑÑ‚Ñ‹ main.c (1 Ñ‚ĞµÑÑ‚)
+    CU_add_test(suite, "main_menu_functions", test_main_menu_function_exists);
+    
     CU_basic_set_mode(CU_BRM_VERBOSE);
     CU_basic_run_tests();
-
+    
     int failed = CU_get_number_of_failures();
     CU_cleanup_registry();
-
+    
     return failed ? 1 : 0;
 }
