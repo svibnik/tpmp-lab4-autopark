@@ -35,7 +35,7 @@ coverage: $(TEST_TARGET)
 	mkdir -p $(COV_DIR)
 	$(TEST_TARGET)
 	lcov --capture --directory . --output-file $(COV_DIR)/coverage.info
-	lcov --remove $(COV_DIR)/coverage.info '/usr/*' --output-file $(COV_DIR)/coverage.info
+	# lcov --remove $(COV_DIR)/coverage.info '/usr/*' --output-file $(COV_DIR)/coverage.info
 	lcov --list $(COV_DIR)/coverage.info
 	genhtml $(COV_DIR)/coverage.info --output-directory $(COV_DIR)/html
 
