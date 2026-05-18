@@ -8,12 +8,15 @@ BIN_DIR = bin
 
 SOURCES = $(SRC_DIR)/main.c $(SRC_DIR)/db.c $(SRC_DIR)/auth.c \
           $(SRC_DIR)/queries.c $(SRC_DIR)/operations.c $(SRC_DIR)/utils.c
-          
+
 TEST_SOURCES = $(TEST_DIR)/test_autopark.c $(SRC_DIR)/db.c $(SRC_DIR)/auth.c \
                $(SRC_DIR)/queries.c $(SRC_DIR)/operations.c $(SRC_DIR)/utils.c
 
 TARGET = $(BIN_DIR)/autopark
 TEST_TARGET = $(BIN_DIR)/test_autopark
+
+COV_FLAGS = -fprofile-arcs -ftest-coverage
+COV_DIR = coverage
 
 all: $(TARGET)
 
@@ -26,10 +29,20 @@ test: $(TEST_TARGET)
 $(TEST_TARGET): $(TEST_SOURCES) | $(BIN_DIR)
 	$(CC) $(CFLAGS) -o $(TEST_TARGET) $(TEST_SOURCES) $(LDFLAGS)
 
+coverage: CFLAGS += $(COV_FLAGS)
+coverage: LDFLAGS += $(COV_FLAGS) -lgcov
+coverage: $(TEST_TARGET)
+	mkdir -p $(COV_DIR)
+	$(TEST_TARGET)
+	lcov --capture --directory . --output-file $(COV_DIR)/coverage.info
+	lcov --remove $(COV_DIR)/coverage.info '/usr/*' --output-file $(COV_DIR)/coverage.info
+	lcov --list $(COV_DIR)/coverage.info
+	genhtml $(COV_DIR)/coverage.info --output-directory $(COV_DIR)/html
+
 $(BIN_DIR):
 	mkdir -p $(BIN_DIR)
 
 clean:
-	rm -rf $(BIN_DIR)
+	rm -rf $(BIN_DIR) $(COV_DIR) *.gcda *.gcno *.gcov
 
-.PHONY: all test clean
+.PHONY: all test coverage clean
