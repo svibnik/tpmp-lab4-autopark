@@ -13,23 +13,44 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
-    - name: Установка зависимостей
+    - name: Install dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y sqlite3 libsqlite3-dev libcunit1-dev
     
-    - name: Создание папок
+    - name: Create directories
       run: mkdir -p bin
     
-    - name: Сборка приложения
+    - name: Compile application
       run: make all
     
-    - name: Сборка и запуск тестов
+    - name: Compile tests
       run: make test
     
-    - name: Загрузка результатов тестов
+    - name: Upload test results
       if: always()
       uses: actions/upload-artifact@v4
       with:
         name: test-results
         path: bin/test_autopark
+
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y sqlite3 libsqlite3-dev libcunit1-dev lcov
+    
+    - name: Run tests with coverage
+      run: |
+        make coverage
+        lcov --list coverage.info
+    
+    - name: Upload coverage report
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report
+        path: coverage.infoы
