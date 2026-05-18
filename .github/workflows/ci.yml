@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Установка зависимостей
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y sqlite3 libsqlite3-dev libcunit1-dev
+    
+    - name: Создание папок
+      run: mkdir -p bin
+    
+    - name: Сборка приложения
+      run: make all
+    
+    - name: Сборка и запуск тестов
+      run: make test
+    
+    - name: Загрузка результатов тестов
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-results
+        path: bin/test_autopark
