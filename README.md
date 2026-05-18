@@ -1,24 +1,37 @@
-# Автопарк - Система управления
+# Автопарк - Система управления автопарком
 
-## Описание
-Консольное приложение для управления автопарком, водителями и заказами.
+## Description
 
-## Установка
+Консольное приложение для управления автопарком, водителями и заказами на перевозку грузов. Приложение позволяет вести учёт автомобилей, водителей, заказов, а также рассчитывать заработок водителей (20% от стоимости перевозки).
 
-### Linux / WSL
+## Installation
 
-```  
-sudo apt-get install sqlite3 libsqlite3-dev libcunit1-dev
+### Linux / WSL / macOS
+
+```bash
+# Установка зависимостей
+sudo apt-get install sqlite3 libsqlite3-dev libcunit1-dev  # Linux
+# или brew install sqlite3 cunit                           # macOS
+
+# Клонирование репозитория
+git clone https://github.com/svibnik/tpmp-lab4-autopark.git
+cd tpmp-lab4-autopark
+
+# Сборка проекта
 make all
+
+# Создание базы данных
 sqlite3 autopark.db < database/schema.sql
-```  
 
-### Запуск
-```  
+# Запуск
 ./bin/autopark
-```  
+```
 
-### Тестовые учётные записи
+## Usage
+
+Запустите приложение: `./bin/autopark`
+
+Войдите с тестовыми учётными данными:
 
 | Роль | Логин | Пароль |
 |------|-------|--------|
@@ -26,10 +39,28 @@ sqlite3 autopark.db < database/schema.sql
 | Водитель | ivanov | ivanov123 |
 | Водитель | petrov | petrov123 |
 
-### Запуск тестов
-```  
-make test
-```  
+Используйте меню для работы:
+- Просмотр заказов водителя за период
+- Статистика по автомобилям и водителям
+- Добавление/обновление/удаление данных
+- Расчёт заработка водителей
 
-## Репозиторий с кодом и CI/CD
-[https://github.com/svibnik/tpmp-lab4-autopark](https://github.com/svibnik/tpmp-lab4-autopark)
+## Contributing
+
+**Автор:** Свибович Никита  
+**Группа:** 10  
+**Вариант:** 1 «Автопарк»
+
+**Реализованные задачи:**
+- Проектирование базы данных (SQLite)
+- Аутентификация и авторизация пользователей
+- CRUD операции для автомобилей, водителей, заказов
+- Проверка грузоподъёмности при создании заказа
+- Расчёт заработка водителей за период
+- Unit-тестирование (CUnit, 40+ тестов)
+- CI/CD с GitHub Actions
+
+## Links
+
+- [Репозиторий с документацией](https://github.com/fpmi-tpmp2026/tpmp-gr10b-lab4-svibovich)
+- [GitHub Actions](https://github.com/svibnik/tpmp-lab4-autopark/actions)
